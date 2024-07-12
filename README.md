@@ -27,7 +27,12 @@ Para executar a simulação localmente, siga estes passos:
    git clone https://github.com/Kyamel/physics_sim_fluids.git
    cd physics_sim_fluids
 
-2. **Instalar Dependências**:
+2. **Criar um ambiente virtual**:
+   ```bash
+   python -m venv venv
+   venv/Scripts/activate
+
+3. **Instalar Dependências**:
    ```bash
    pip install pygame
    pip install pymunk
