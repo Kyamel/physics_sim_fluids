@@ -21,7 +21,7 @@ O objetivo deste projeto é simular o comportamento de fluidos em um ambiente 2D
 ## Instalação
 
 Para executar a simulação localmente, siga estes passos:
-- **python**: tenha o python 3.12 instalado na sua máquina https://www.python.org/downloads/.
+- **Intalação**: tenha o python 3.12 instalado na sua máquina https://www.python.org/downloads/.
 
 1. **Clonar o Repositório**:
    ```bash
