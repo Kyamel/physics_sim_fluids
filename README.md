@@ -21,19 +21,20 @@ O objetivo deste projeto é simular o comportamento de fluidos em um ambiente 2D
 ## Instalação
 
 Para executar a simulação localmente, siga estes passos:
-- **Intalação**: tenha o python 3.12 instalado na sua máquina https://www.python.org/downloads/.
 
-1. **Clonar o Repositório**:
+1. **Intalação**: tenha o python 3.12+ instalado na sua máquina https://www.python.org/downloads/.
+
+2. **Clonar o Repositório**:
    ```bash
    git clone https://github.com/Kyamel/physics_sim_fluids.git
    cd physics_sim_fluids
 
-2. **Criar um ambiente virtual**:
+3. **Criar um ambiente virtual**:
    ```bash
    python -m venv venv
    venv/Scripts/activate
 
-3. **Instalar Dependências**:
+4. **Instalar Dependências**:
    ```bash
    pip install pygame
    pip install pymunk
