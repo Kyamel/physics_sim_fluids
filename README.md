@@ -38,3 +38,7 @@ Para executar a simulação localmente, siga estes passos:
    ```bash
    pip install pygame
    pip install pymunk
+
+5. **Executar**:
+   ```bash
+   python src/main.py
