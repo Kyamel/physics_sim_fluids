@@ -26,3 +26,8 @@ Para executar a simulação localmente, siga estes passos:
    ```bash
    git clone https://github.com/Kyamel/physics_sim_fluids.git
    cd physics_sim_fluids
+
+2. **Instalar Dependências**:
+   ```bash
+   pip install pygame
+   pip install pymunk
