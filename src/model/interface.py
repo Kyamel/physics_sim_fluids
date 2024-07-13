@@ -1,6 +1,5 @@
 from abc import ABC, abstractmethod
-from typing import Tuple, Sequence
-import pymunk
+from typing import Tuple
 
 class ShapeInterface(ABC):
     @abstractmethod

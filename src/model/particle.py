@@ -1,12 +1,14 @@
 from typing import Tuple
 import pymunk
 from model.interface import ShapeInterface
+from utils import values
 
 
 class Particle(ShapeInterface):
     def __init__(self, x, y, radius: float, mass=1.0, moment=10.0) -> None:
         self.body = pymunk.Body(mass, moment)
         self.body.position = x, y
+        self.body.position = x, values.HEIGHT - y 
         self.shape = pymunk.Circle(self.body, radius)
 
     def set_friction(self, value: float) -> None:

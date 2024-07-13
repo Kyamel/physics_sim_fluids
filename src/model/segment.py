@@ -3,9 +3,10 @@ import pymunk
 from model.interface import ShapeInterface
 
 class Segment(ShapeInterface):
-    def __init__(self, a: Tuple[float, float], b: Tuple[float, float], radius: float = 5) -> None:
+    def __init__(self, a: Tuple[float, float], b: Tuple[float, float], radius: float = 5):
         self.body = pymunk.Body(body_type=pymunk.Body.STATIC)
         self.shape = pymunk.Segment(self.body, a, b, radius)
+
 
     def set_friction(self, value: float) -> None:
         self.shape.friction = value
