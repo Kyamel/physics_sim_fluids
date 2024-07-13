@@ -23,20 +23,23 @@ def main():
     # Adicionar o "chão" como uma linha estática
     ground = DrawableSegment((0, 0), (values.WIDTH, 0), 5)
     ground.set_friction(0.5)
-    space.add(ground.body, ground.shape)
+    ground.add_to_space(space)
 
     # Adicionar paredes laterais como linhas estáticas
     left_wall = DrawableSegment((0, 0), (0, values.HEIGHT), 5)
     right_wall = DrawableSegment((values.WIDTH, 0), (values.WIDTH, values.HEIGHT), 5)
+    left_wall.add_to_space(space)
     left_wall.set_friction(0.5)
     right_wall.set_friction(0.5)
-    space.add(left_wall.body, right_wall.body, left_wall.shape, right_wall.shape)
+    right_wall.add_to_space(space)
+
+    # Cria uma rampa estática (segmento inclinado)
 
     # Cria uma rampa estática (segmento inclinado)
     ramp = DrawableSegment((50, 100), (300, 200), 5)
     ramp.set_friction(1.0)
-    space.add(ramp.body, ramp.shape)
-
+    ramp.add_to_space(space)
+    
     # Função para adicionar partículas
     def add_particle(x, y) -> DrawableParticle:
         x = random.uniform(x-0.1, x+0.1)
