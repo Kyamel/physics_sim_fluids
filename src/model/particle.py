@@ -6,7 +6,7 @@ from utils import values
 
 class Particle(ShapeInterface):
     def __init__(self, x, y, radius: float, mass=1.0, raio_externo = 0, raio_interno = 5) -> None:
-        inertia = pymunk.moment_for_circle(mass,raio_externo,raio_interno)
+        inertia = pymunk.moment_for_circle(mass,raio_externo, raio_interno)
         self.body = pymunk.Body(mass, inertia)
         self.body.position = x, y
         self.body.position = x, values.HEIGHT - y 
