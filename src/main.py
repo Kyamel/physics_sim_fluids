@@ -3,6 +3,10 @@ import pymunk
 import pymunk.pygame_util
 import random
 
+# Função para converter coordenadas pymunk -> pygame
+def pymunk_to_pygame(p):
+    return int(p.x), int(HEIGHT - p.y)
+
 # Configurações da tela
 WIDTH, HEIGHT = 800, 600
 BACKGROUND_COLOR = (0, 0, 0)
@@ -36,15 +40,12 @@ left_wall.friction = 0.5
 right_wall.friction = 0.5
 space.add(left_wall, right_wall)
 
-# Adicionar a rampa como uma linha estática inclinada
-ramp_length = 200
-ramp_height = 100
-ramp_body = pymunk.Body(body_type=pymunk.Body.STATIC)
-# Coordenadas da rampa: começando da parte inferior central da tela até a parte superior esquerda
-ramp_shape = pymunk.Segment(ramp_body, (WIDTH // 2, 10), (WIDTH // 2 - ramp_length, 10 + ramp_height), 5)
-ramp_shape.elasticity = 0.5
-ramp_shape.friction = 0.5
-space.add(ramp_body, ramp_shape)
+# Cria uma rampa estática (segmento inclinado)
+ramp_start = (50, 100)
+ramp_end = (300, 200)
+ramp = pymunk.Segment(space.static_body, ramp_start, ramp_end, 5)
+ramp.friction = 1.0
+space.add(ramp)
 
 # Função para adicionar partículas
 def add_particle(x, y):
@@ -96,8 +97,7 @@ while running:
     pygame.draw.line(screen, LINE_COLOR, (10, 0), (10, HEIGHT), 5)
     pygame.draw.line(screen, LINE_COLOR, (WIDTH - 10, 0), (WIDTH - 10, HEIGHT), 5)
     # Desenhar a rampa
-    pygame.draw.line(screen, LINE_COLOR, (WIDTH // 2, 10), (WIDTH // 2 - ramp_length, 10 + ramp_height), 5)
-    pygame.draw.line(screen, LINE_COLOR, (WIDTH // 2, 10), (WIDTH // 2 + ramp_length, 10 + ramp_height), 5)
+    pygame.draw.line(screen, LINE_COLOR, pymunk_to_pygame(ramp.a), pymunk_to_pygame(ramp.b), 5)
 
 
     # Calcular e exibir o FPS
