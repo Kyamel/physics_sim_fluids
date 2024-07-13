@@ -4,9 +4,8 @@ from typing import List
 import pygame
 import pymunk
 import random
-from model.particle import Particle
-from model.segment import Segment
-from visual.renderer import Renderer
+from model.drawable.particle import DrawableParticle
+from model.drawable.segment import DrawableSegment
 from utils import values
 
 def main():
@@ -17,42 +16,39 @@ def main():
     clock = pygame.time.Clock()
     font = pygame.font.Font(None, 30)  # Fonte para exibir o FPS
 
-    # valesuração do Pymunk
+    # Configuração do Pymunk
     space = pymunk.Space()
     space.gravity = (0, -values.GRAVITY)  # Gravidade negativa para baixo
 
-    # Inicializar Renderer
-    renderer = Renderer(screen)
-
     # Adicionar o "chão" como uma linha estática
-    ground = Segment((0, 0), (values.WIDTH, 0), 5)
+    ground = DrawableSegment((0, 0), (values.WIDTH, 0), 5)
     ground.set_friction(0.5)
     space.add(ground.body, ground.shape)
 
     # Adicionar paredes laterais como linhas estáticas
-    left_wall = Segment((0, 0), (0, values.HEIGHT), 5)
-    right_wall = Segment((values.WIDTH, 0), (values.WIDTH, values.HEIGHT), 5)
+    left_wall = DrawableSegment((0, 0), (0, values.HEIGHT), 5)
+    right_wall = DrawableSegment((values.WIDTH, 0), (values.WIDTH, values.HEIGHT), 5)
     left_wall.set_friction(0.5)
     right_wall.set_friction(0.5)
     space.add(left_wall.body, right_wall.body, left_wall.shape, right_wall.shape)
 
     # Cria uma rampa estática (segmento inclinado)
-    ramp = Segment((50, 100), (300, 200), 5)
+    ramp = DrawableSegment((50, 100), (300, 200), 5)
     ramp.set_friction(1.0)
     space.add(ramp.body, ramp.shape)
 
     # Função para adicionar partículas
-    def add_particle(x, y) -> Particle:
+    def add_particle(x, y) -> DrawableParticle:
         x = random.uniform(x-0.1, x+0.1)
         y = random.uniform(y-0.1, y+0.1)
-        particle = Particle(x, y, 5)  # Raio 5 para a partícula
+        particle = DrawableParticle(x, y, 5)  # Raio 5 para a partícula
         particle.set_elasticity(0.5)
         particle.set_friction(0.5)
         space.add(particle.body, particle.shape)
         return particle
 
     # Lista de partículas
-    particles: List[Particle] = []
+    particles: List[DrawableParticle] = []
 
     # Loop principal
     running = True
@@ -77,15 +73,15 @@ def main():
 
         # Desenhar partículas
         for particle in particles:
-            renderer.draw_particle(particle)
+            particle.draw(screen)
 
         # Desenhar o "chão"
-        renderer.draw_segment(ground)
+        ground.draw(screen)
         # Desenhar paredes (linhas estáticas)
-        renderer.draw_segment(left_wall)
-        renderer.draw_segment(right_wall)
+        left_wall.draw(screen)
+        right_wall.draw(screen)
         # Desenhar a rampa
-        renderer.draw_segment(ramp)
+        ramp.draw(screen)
 
         # Calcular e exibir o FPS
         fps = clock.get_fps()
