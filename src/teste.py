@@ -33,9 +33,15 @@ def main():
     space.add(left_wall.body, right_wall.body, left_wall.shape, right_wall.shape)
 
     # Cria uma rampa estática (segmento inclinado)
-    ramp = DrawableSegment((50, 100), (300, 200), 5)
+    ramp = DrawableSegment((50, 300), (300, 500), 5)
     ramp.set_friction(1.0)
     space.add(ramp.body, ramp.shape)
+
+    # Cria uma superficie quadrada
+    square_shape1 = DrawableSegment((30,20), (30,100),5)
+    square_shape2 = DrawableSegment((30,20),(110,20),5)
+    square_shape3 = DrawableSegment((110,20), (110,100),5)
+    space.add(square_shape1.body,square_shape1.shape,square_shape2.body,square_shape2.shape,square_shape3.body,square_shape3.shape)
 
     # Função para adicionar partículas
     def add_particle(x, y) -> DrawableParticle:
@@ -82,7 +88,11 @@ def main():
         right_wall.draw(screen)
         # Desenhar a rampa
         ramp.draw(screen)
-
+        
+        #desenhando a superficie quadrada
+        square_shape1.draw(screen)
+        square_shape2.draw(screen)
+        square_shape3.draw(screen)
         # Calcular e exibir o FPS
         fps = clock.get_fps()
         fps_text = font.render(f" FPS: {int(fps)}", True, values.TEXT_COLOR)
