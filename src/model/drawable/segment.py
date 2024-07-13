@@ -9,4 +9,6 @@ class DrawableSegment(Segment):
         super().__init__(a, b, radius)
 
     def draw(self, screen: pygame.Surface) -> None:
-        pygame.draw.line(screen, values.LINE_COLOR, self.shape.a, (self.shape.b[0], values.HEIGHT - self.shape.b[1]), self.shape.radius)
+        start = self.shape.a.x, values.HEIGHT -self.shape.a.y
+        end = self.shape.b.x, values.HEIGHT -self.shape.b.y
+        pygame.draw.line(screen, values.LINE_COLOR, start, end, int(self.shape.radius))
