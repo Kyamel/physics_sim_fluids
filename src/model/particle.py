@@ -12,6 +12,9 @@ class Particle(ShapeInterface):
         self.body.position = x, values.HEIGHT - y 
         self.shape = pymunk.Circle(self.body, radius)
 
+    def add_to_space(self, space: pymunk.Space) -> None:
+        space.add(self.body, self.shape)
+        
     def set_friction(self, value: float) -> None:
         self.shape.friction = value
 

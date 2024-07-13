@@ -5,8 +5,10 @@ import pygame
 import pymunk
 import random
 from model.drawable.particle import DrawableParticle
+from model.drawable.poly import DrawablePoly
 from model.drawable.segment import DrawableSegment
 from utils import values
+import math
 
 def main():
     # Inicialização do Pygame
@@ -23,14 +25,17 @@ def main():
     # Adicionar o "chão" como uma linha estática
     ground = DrawableSegment((0, 0), (values.WIDTH, 0), 5)
     ground.set_friction(0.5)
-    space.add(ground.body, ground.shape)
+    ground.add_to_space(space)
 
     # Adicionar paredes laterais como linhas estáticas
     left_wall = DrawableSegment((0, 0), (0, values.HEIGHT), 5)
     right_wall = DrawableSegment((values.WIDTH, 0), (values.WIDTH, values.HEIGHT), 5)
+    left_wall.add_to_space(space)
     left_wall.set_friction(0.5)
     right_wall.set_friction(0.5)
-    space.add(left_wall.body, right_wall.body, left_wall.shape, right_wall.shape)
+    right_wall.add_to_space(space)
+
+    # Cria uma rampa estática (segmento inclinado)
 
     # Cria uma rampa estática (segmento inclinado)
     ramp = DrawableSegment((50, 300), (300, 500), 5)
@@ -39,9 +44,30 @@ def main():
 
     # Cria uma superficie quadrada
     square_shape1 = DrawableSegment((30,20), (30,100),5)
+    square_shape1.add_to_space(space)
     square_shape2 = DrawableSegment((30,20),(110,20),5)
+    square_shape2.add_to_space(space)
     square_shape3 = DrawableSegment((110,20), (110,100),5)
-    space.add(square_shape1.body,square_shape1.shape,square_shape2.body,square_shape2.shape,square_shape3.body,square_shape3.shape)
+    square_shape3.add_to_space(space)
+
+    # Cria um semicirculo
+    def create_semicircle_vertices(radius, segments):
+        points = []
+        for i in range(segments + 1):
+            angle = math.pi * i / segments  # Angulo varia de 0 a pi
+            x = radius * math.cos(angle)
+            y = radius * math.sin(angle)
+            points.append((x, y))
+        points.append((0, 0))  # Adiciona o centro para completar o semicírculo
+        return points
+    
+    raio = 50
+    segmento = 20
+    vertices = create_semicircle_vertices(raio,segmento)
+    semicirculo = DrawablePoly(vertices)
+    semicirculo.set_friction(0.5)
+    semicirculo.set_elasticity(0.5)
+    semicirculo.add_to_space(space)
 
     # Função para adicionar partículas
     def add_particle(x, y) -> DrawableParticle:

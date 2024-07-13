@@ -12,3 +12,6 @@ class DrawableSegment(Segment):
         start = self.shape.a.x, values.HEIGHT -self.shape.a.y
         end = self.shape.b.x, values.HEIGHT -self.shape.b.y
         pygame.draw.line(screen, values.LINE_COLOR, start, end, int(self.shape.radius))
+
+    def add_to_space(self, space: pymunk.Space) -> None:
+        super().add_to_space(space)

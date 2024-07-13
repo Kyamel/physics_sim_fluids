@@ -1,6 +1,8 @@
 from abc import ABC, abstractmethod
 from typing import Tuple
 
+import pymunk
+
 class ShapeInterface(ABC):
     @abstractmethod
     def set_friction(self, value: float) -> None:

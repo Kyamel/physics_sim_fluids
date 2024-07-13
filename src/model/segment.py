@@ -7,6 +7,8 @@ class Segment(ShapeInterface):
         self.body = pymunk.Body(body_type=pymunk.Body.STATIC)
         self.shape = pymunk.Segment(self.body, a, b, radius)
 
+    def add_to_space(self, space: pymunk.Space) -> None:
+        space.add(self.body, self.shape)
 
     def set_friction(self, value: float) -> None:
         self.shape.friction = value

@@ -4,8 +4,12 @@ from model.interface import ShapeInterface
 
 class Poly(ShapeInterface):
     def __init__(self, vertices: Sequence[Tuple[float, float]]) -> None:
+        self.vertices = vertices
         self.body = pymunk.Body(body_type=pymunk.Body.STATIC)
         self.shape = pymunk.Poly(self.body, vertices)
+
+    def add_to_space(self, space: pymunk.Space) -> None:
+        space.add(self.body, self.shape)
 
     def set_friction(self, value: float) -> None:
         self.shape.friction = value
