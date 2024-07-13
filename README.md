@@ -26,7 +26,7 @@ Para executar a simulação localmente, siga estes passos:
 
 2. **Clonar o Repositório**:
    ```bash
-   git clone https://github.com/Kyamel/physics_sim_fluids.git
+   git clone https://github.com/Kyamel/physics_sim_fluids
    cd physics_sim_fluids
 
 3. **Criar um ambiente virtual**:
