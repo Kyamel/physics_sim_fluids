@@ -87,21 +87,15 @@ def main():
             if event.type == pygame.QUIT:
                 running = False
             if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
-                if menu_panel.relative_rect.collidepoint(event.pos):
-                    pass
-                else:
-                    x, y = event.pos
-                    mass = float(mass_input.get_text())
-                    inertia = float(inertia_input.get_text())
-                    particle = add_particle(x, y, mass, inertia)
-                    particles.append(particle)
-            if event.type == pygame.KEYDOWN and event.key == pygame.K_m:
-                if menu_panel.relative_rect.x == values.WIDTH:
-                    menu_panel.set_relative_position((values.WIDTH - 300, 0))
-                else:
+                if menu_button.relative_rect.collidepoint(event.pos):
+                    if menu_panel.relative_rect.x == values.WIDTH:
+                        menu_panel.set_relative_position((values.WIDTH - 300, 0))
+                    else:
+                        menu_panel.set_relative_position((values.WIDTH, 0))
+                elif not menu_panel.relative_rect.collidepoint(event.pos):
                     menu_panel.set_relative_position((values.WIDTH, 0))
 
-            if event.type == pygame.USEREVENT and event.user_type == pygame_gui.UI_DROP_DOWN_MENU_CHANGED:
+            if event.type == pygame_gui.UI_DROP_DOWN_MENU_CHANGED:
                 if event.ui_element == particle_selector:
                     selected_index = event.text  # Extrai o número do tipo de partícula
                     global selected_particle_type
