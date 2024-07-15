@@ -33,7 +33,7 @@ def main():
     color_picker = pygame_gui.elements.UIButton(relative_rect=pygame.Rect((10, 130), (280, 40)), text='Escolher Cor', manager=manager, container=menu_panel)
 
     # Seletor para escolher o tipo de partícula
-    particle_selector = pygame_gui.elements.UIDropDownMenu(['1', '2', '3'],starting_option='1',relative_rect=pygame.Rect((10, 170), (280, 30)), manager=manager, container=menu_panel)
+    particle_selector = pygame_gui.elements.UIDropDownMenu(['1', '2', '3'], starting_option='1', relative_rect=pygame.Rect((10, 170), (280, 30)), manager=manager, container=menu_panel)
 
     def add_particle(x, y, mass, inertia):
         x = random.uniform(x - 0.1, x + 0.1)
@@ -90,11 +90,18 @@ def main():
                 if menu_button.relative_rect.collidepoint(event.pos):
                     if menu_panel.relative_rect.x == values.WIDTH:
                         menu_panel.set_relative_position((values.WIDTH - 300, 0))
+                        menu_button.set_relative_position((values.WIDTH - 400, 10))
+                        menu_button.set_text('X')
                     else:
                         menu_panel.set_relative_position((values.WIDTH, 0))
+                        menu_button.set_relative_position((values.WIDTH - 100, 10))
+                        menu_button.set_text('Menu')
                 elif not menu_panel.relative_rect.collidepoint(event.pos):
-                    menu_panel.set_relative_position((values.WIDTH, 0))
-
+                    x, y = pygame.mouse.get_pos()
+                    mass = float(mass_input.get_text())
+                    inertia = float(inertia_input.get_text())
+                    particle = add_particle(x, y, mass, inertia)
+                    particles.append(particle)
             if event.type == pygame_gui.UI_DROP_DOWN_MENU_CHANGED:
                 if event.ui_element == particle_selector:
                     selected_index = event.text  # Extrai o número do tipo de partícula
