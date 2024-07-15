@@ -9,49 +9,25 @@ from visual.sidebar import Sidebar
 
 
 def main():
-    # Configura o pygame
     pygame.init()
     screen = pygame.display.set_mode((values.WIDTH, values.HEIGHT))
     pygame.display.set_caption("Simulador de Fluidos 2D com pymunk")
     clock = pygame.time.Clock()
     font = pygame.font.Font(None, 30)
-
-    # Configura a barra lateral
     sidebar = Sidebar((values.WIDTH, values.HEIGHT))
-
-    # Configura o espaço físico pymunk
-    space = pymunk.Space()
-    space.gravity = (0, -values.GRAVITY)
-
-    # Adiciona o chão como uma linha estática
-    ground = DrawableSegment((0, 0), (values.WIDTH, 0), 5)
-    ground.set_friction(0.5)
-    ground.add_to_space(space)
-
-    # Adiciona paredes laterais como linhas estáticas
-    left_wall = DrawableSegment((0, 0), (0, values.HEIGHT), 5)
-    right_wall = DrawableSegment((values.WIDTH, 0), (values.WIDTH, values.HEIGHT), 5)
-    left_wall.add_to_space(space)
-    left_wall.set_friction(0.5)
-    right_wall.set_friction(0.5)
-    right_wall.add_to_space(space)
-
-    # Cria uma rampa estática (segmento inclinado)
-    ramp = DrawableSegment((50, 100), (300, 200), 5)
-    ramp.set_friction(1.0)
-    ramp.add_to_space(space)
 
     def add_particle(x, y, mass, inertia):
         x = random.uniform(x - 0.1, x + 0.1)
         y = random.uniform(y - 0.1, y + 0.1)
-        color = sidebar.selected_color
         
         if sidebar.selected_particle_type == 1:
-            particle = DrawableParticle(x, y, 5, mass, color=(255, 0, 0))
+            # Partícula de água
+            particle = DrawableParticle(x, y, 5, mass, color=(0, 0, 255))  # Azul
+            particle.shape.filter = pymunk.ShapeFilter(categories=0b1, mask=pymunk.ShapeFilter.ALL_MASKS() ^ 0b10)
         elif sidebar.selected_particle_type == 2:
-            particle = DrawableParticle(x, y, 5, mass * 2, color=(0, 255, 0))
-        elif sidebar.selected_particle_type == 3:
-            particle = DrawableParticle(x, y, 5, mass * 0.5, color=(0, 0, 255))
+            # Partícula de óleo
+            particle = DrawableParticle(x, y, 5, mass * 2, color=(255, 0, 0))  # Vermelho
+            particle.shape.filter = pymunk.ShapeFilter(categories=0b10, mask=pymunk.ShapeFilter.ALL_MASKS() ^ 0b1)
         else:
             particle = DrawableParticle(x, y, 5, mass, inertia, values.PARTICLE_COLOR)
         
@@ -59,6 +35,28 @@ def main():
         particle.set_friction(0.5)
         space.add(particle.body, particle.shape)
         return particle
+
+    space = pymunk.Space()
+    space.gravity = (0, -values.GRAVITY)
+
+    ground = DrawableSegment((0, 0), (values.WIDTH, 0), 5)
+    ground.set_friction(0.5)
+    ground.add_to_space(space)
+
+    left_wall = DrawableSegment((0, 0), (0, values.HEIGHT), 5)
+    right_wall = DrawableSegment((values.WIDTH, 0), (values.WIDTH, values.HEIGHT), 5)
+    left_wall.add_to_space(space)
+    left_wall.set_friction(0.5)
+    right_wall.set_friction(0.5)
+    right_wall.add_to_space(space)
+
+   # Cria uma superficie quadrada
+    square_shape1 = DrawableSegment((30,20), (30,100),5)
+    square_shape1.add_to_space(space)
+    square_shape2 = DrawableSegment((30,20),(110,20),5)
+    square_shape2.add_to_space(space)
+    square_shape3 = DrawableSegment((110,20), (110,100),5)
+    square_shape3.add_to_space(space)
 
     particles: List[DrawableParticle] = []
 
@@ -91,12 +89,18 @@ def main():
         space.step(1 / 60.0)
 
         for particle in particles:
+            if particle.shape.filter.categories == 0b10:  # Partícula de óleo
+                # Adiciona uma força adicional para simular a densidade
+                particle.body.apply_force_at_local_point((0, -50), (0, 0))
+
             particle.draw(screen)
 
         ground.draw(screen)
         left_wall.draw(screen)
         right_wall.draw(screen)
-        ramp.draw(screen)
+        square_shape1.draw(screen)
+        square_shape2.draw(screen)
+        square_shape3.draw(screen)
 
         fps = clock.get_fps()
         fps_text = font.render(f" FPS: {int(fps)}", True, values.TEXT_COLOR)
