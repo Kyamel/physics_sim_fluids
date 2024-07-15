@@ -3,7 +3,7 @@ import pygame_gui
 from utils import values
 
 class Sidebar:
-    def __init__(self, screen_size):
+    def __init__(self, screen_size: tuple[int, int]) -> None:
         self.selected_particle_type = 1  # Inicialmente seleciona o tipo 1
         self.manager = pygame_gui.UIManager(screen_size)
         self.menu_button = pygame_gui.elements.UIButton(
@@ -45,7 +45,7 @@ class Sidebar:
 
         self.selected_color = (0, 255, 0)
 
-    def process_events(self, event):
+    def process_events(self, event: pygame.event.Event) -> None:
         if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
             if self.menu_button.relative_rect.collidepoint(event.pos):
                 if self.menu_panel.relative_rect.x == values.WIDTH:
@@ -65,8 +65,8 @@ class Sidebar:
 
         self.manager.process_events(event)
 
-    def update(self, time_delta):
+    def update(self, time_delta: float) -> None:
         self.manager.update(time_delta)
 
-    def draw_ui(self, screen):
+    def draw_ui(self, screen: pygame.Surface) -> None:
         self.manager.draw_ui(screen)
