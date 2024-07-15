@@ -37,6 +37,7 @@ Para executar a simulação localmente, siga estes passos:
 4. **Instalar Dependências**:
    ```bash
    pip install pygame
+   pip install pygame_gui
    pip install pymunk
 
 5. **Executar**:
