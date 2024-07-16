@@ -1,3 +1,6 @@
+# model/particle.py
+# modelo de um particle pymunk
+
 from typing import Tuple
 import pymunk
 from model.interface import ShapeInterface
@@ -5,8 +8,8 @@ from utils import values
 
 
 class Particle(ShapeInterface):
-    def __init__(self, x, y, radius: float, mass=1.0, raio_externo = 0, raio_interno = 5) -> None:
-        inertia = pymunk.moment_for_circle(mass,raio_externo, raio_interno)
+    def __init__(self, x, y, radius: float, mass=1.0, inner_radius = 0, outer_radius = 5) -> None:
+        inertia = pymunk.moment_for_circle(mass,inner_radius, outer_radius)
         self.body = pymunk.Body(mass, inertia)
         self.body.position = x, y
         self.body.position = x, values.HEIGHT - y 

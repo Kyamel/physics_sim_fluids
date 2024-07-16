@@ -1,4 +1,5 @@
 # visual/renderer.py
+# emcapsula a renderização das partículas e sidebar
 import random
 from typing import List
 import pygame
@@ -7,7 +8,7 @@ from model.drawable.particle import DrawableParticle
 from model.particle import Particle
 from model.segment import Segment
 from utils import values
-from visual import sidebar
+from view import sidebar
 
 class Renderer:
     def __init__(self, screen: pygame.Surface, space: pymunk.Space, sidebar: sidebar.Sidebar) -> None:

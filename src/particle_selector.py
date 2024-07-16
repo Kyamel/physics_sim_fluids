@@ -4,8 +4,8 @@ from typing import List
 from model.drawable.particle import DrawableParticle
 from model.drawable.segment import DrawableSegment
 from utils import values
-from visual.renderer import Renderer
-from visual.sidebar import Sidebar
+from view.renderer import Renderer
+from view.sidebar import Sidebar
 
 
 def main():

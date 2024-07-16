@@ -1,3 +1,6 @@
+# model/segment.py
+# modelo se um segmento pymunk
+
 from typing import Tuple
 import pymunk
 from model.interface import ShapeInterface

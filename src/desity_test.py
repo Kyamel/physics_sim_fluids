@@ -5,7 +5,7 @@ from typing import List
 from model.drawable.particle import DrawableParticle
 from model.drawable.segment import DrawableSegment
 from utils import values
-from visual.sidebar import Sidebar
+from view.sidebar import Sidebar
 
 
 def main():

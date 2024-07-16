@@ -1,3 +1,6 @@
+# model/drawable/poly.py
+# poly pymunk desenhável no pygame
+
 import pygame
 from typing import Sequence, Tuple
 

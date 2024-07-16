@@ -1,3 +1,6 @@
+# model/box.py
+# modelo de um box pymunk
+
 from typing import Tuple
 import pymunk
 from model.interface import ShapeInterface

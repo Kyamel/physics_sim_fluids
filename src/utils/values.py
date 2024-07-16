@@ -1,3 +1,6 @@
+# src\utils\values.py
+# valores globais
+
 WIDTH, HEIGHT = 800, 600
 BACKGROUND_COLOR = (0, 0, 0)
 PARTICLE_COLOR = (0, 255, 0)

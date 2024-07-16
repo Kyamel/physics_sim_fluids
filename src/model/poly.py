@@ -1,3 +1,6 @@
+# model/poly.py
+# modelo de um poly pymunk
+
 from typing import Sequence, Tuple
 import pymunk
 from model.interface import ShapeInterface

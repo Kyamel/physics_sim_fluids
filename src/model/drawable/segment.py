@@ -1,3 +1,6 @@
+# model/drawable/segment.py
+# segmento pymunk desenhável no pygame
+
 import pymunk
 import pygame
 from typing import Tuple

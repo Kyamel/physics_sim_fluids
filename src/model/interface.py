@@ -1,7 +1,8 @@
+# model/interface.py
+# interface para as formas do pymunk
+
 from abc import ABC, abstractmethod
 from typing import Tuple
-
-import pymunk
 
 class ShapeInterface(ABC):
     @abstractmethod

@@ -1,3 +1,6 @@
+# src\view\sidebar.py
+# menu lateral
+
 import pygame
 import pygame_gui
 from utils import values
