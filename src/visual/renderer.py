@@ -20,11 +20,11 @@ class Renderer:
         pygame.display.set_caption("Simulador de Fluidos 2D com pymunk")
         self.font = pygame.font.Font(None, 30)
 
-    def add_particle(self, x: float, y: float, mass: float, inertia: float) -> Particle:
-        x = random.uniform(x - 0.1, x + 0.1)
-        y = random.uniform(y - 0.1, y + 0.1)
+    def add_particle(self, x: int, y: int, mass: float, inertia: float) -> Particle:
+        x += random.randint(-1, 1)
+        y += random.randint(-1, 1)
         color = self.sidebar.selected_color
-        
+
         if self.sidebar.selected_particle_type == 1:
             particle = DrawableParticle(x, y, 5, mass, color=(255, 0, 0))
         elif self.sidebar.selected_particle_type == 2:
@@ -41,10 +41,13 @@ class Renderer:
         return particle
     
     def update(self) -> None:
+        self.screen.fill(values.BACKGROUND_COLOR)
         self.time_delta = self.clock.tick(60) / 1000.0
         self.space.step(1 / 60.0)
+        self.sidebar.update(self.time_delta)
+        self.sidebar.draw(self.screen)
 
-        
+
     def show_statistics(self) -> None:
         fps = self.clock.get_fps()
         fps_text = self.font.render(f" FPS: {int(fps)}", True, values.TEXT_COLOR)

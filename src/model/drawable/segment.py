@@ -5,7 +5,7 @@ from model.segment import Segment
 from utils import values
 
 class DrawableSegment(Segment):
-    def __init__(self, a: Tuple[float, float], b: Tuple[float, float], radius: float = 5):
+    def __init__(self, a: Tuple[int, int], b: Tuple[int, int], radius: float = 5):
         super().__init__(a, b, radius)
 
     def draw(self, screen: pygame.Surface) -> None:
