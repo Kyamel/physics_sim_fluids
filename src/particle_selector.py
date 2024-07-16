@@ -56,7 +56,7 @@ def main():
                     inertia = float(sidebar.inertia_input.get_text())
                     renderer.add_particle(x, y, mass, inertia)
                     
-            sidebar.handle_events(event)
+            renderer.sidebar.handle_events(event)
 
         keys = pygame.key.get_pressed()
         if keys[pygame.K_a]:
@@ -65,7 +65,9 @@ def main():
             inertia = float(sidebar.inertia_input.get_text())
             renderer.add_particle(x, y, mass, inertia)
 
-        screen.fill(values.BACKGROUND_COLOR)
+        renderer.update()
+        renderer.draw_particles()
+        renderer.show_statistics()   
 
         ground.draw(screen)
         left_wall.draw(screen)
@@ -73,12 +75,6 @@ def main():
         square_shape1.draw(screen)
         square_shape2.draw(screen)
         square_shape3.draw(screen)
-
-        sidebar.update(renderer.time_delta)
-        sidebar.draw(screen)
-        renderer.draw_particles()
-        renderer.show_statistics()
-        renderer.update()   
 
         pygame.display.flip()
 
