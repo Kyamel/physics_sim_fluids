@@ -4,8 +4,9 @@
 import pygame
 import pygame_gui
 from utils import values
+from view.menu import MenuInterface
 
-class Sidebar:
+class Sidebar(MenuInterface):
     def __init__(self, screen_size: tuple[int, int]) -> None:
         self.selected_particle_type = 1  # Inicialmente seleciona o tipo 1
         self.manager = pygame_gui.UIManager(screen_size)

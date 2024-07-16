@@ -3,7 +3,7 @@
 
 from typing import Tuple
 import pymunk
-from model.interface import ShapeInterface
+from model.shape import ShapeInterface
 
 class Box(ShapeInterface):
     def __init__(self, size: Tuple[float, float], radius: float = 0) -> None:

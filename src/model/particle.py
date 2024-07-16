@@ -3,7 +3,7 @@
 
 from typing import Tuple
 import pymunk
-from model.interface import ShapeInterface
+from model.shape import ShapeInterface
 from utils import values
 
 

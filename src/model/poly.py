@@ -3,7 +3,7 @@
 
 from typing import Sequence, Tuple
 import pymunk
-from model.interface import ShapeInterface
+from model.shape import ShapeInterface
 
 class Poly(ShapeInterface):
     def __init__(self, vertices: Sequence[Tuple[float, float]]) -> None:
