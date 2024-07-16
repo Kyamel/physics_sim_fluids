@@ -89,7 +89,7 @@ To run the simulation locally, follow these steps:
    git clone https://github.com/Kyamel/physics_sim_fluids
    cd physics_sim_fluids
 
-3. **Crear a vitual enviroment**:
+3. **Create a vitual enviroment**:
    ```bash
    python -m venv venv
    venv/Scripts/activate
