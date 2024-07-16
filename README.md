@@ -11,7 +11,7 @@
   - [Installation](#installation)
 
 # Portuguese
-# Simulação 2D de Fluidos com Pygame e Pymunk
+## Simulação 2D de Fluidos com Pygame e Pymunk
 
 Este repositório contém uma simulação 2D de fluidos desenvolvida como parte de um trabalho de física sobre mecânica dos fluidos. Utilizamos Pygame para a renderização gráfica e Pymunk para simulação física de partículas fluidas.
 
@@ -58,7 +58,7 @@ Para executar a simulação localmente, siga estes passos:
    python src/main.py
 
 # English
-# 2D Fluid Simulation with Pygame and Pymunk
+## 2D Fluid Simulation with Pygame and Pymunk
 
 This repository contains a 2D fluid simulation developed as part of a physics project on fluid mechanics. We use Pygame for graphical rendering and Pymunk for simulating fluid particle physics.
 
