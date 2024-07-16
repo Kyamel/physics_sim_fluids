@@ -45,7 +45,7 @@ class Sidebar:
 
         self.selected_color = (0, 255, 0)
 
-    def process_events(self, event: pygame.event.Event) -> None:
+    def handle_events(self, event: pygame.event.Event) -> None:
         if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
             if self.menu_button.relative_rect.collidepoint(event.pos):
                 if self.menu_panel.relative_rect.x == values.WIDTH:
@@ -68,5 +68,5 @@ class Sidebar:
     def update(self, time_delta: float) -> None:
         self.manager.update(time_delta)
 
-    def draw_ui(self, screen: pygame.Surface) -> None:
+    def draw(self, screen: pygame.Surface) -> None:
         self.manager.draw_ui(screen)

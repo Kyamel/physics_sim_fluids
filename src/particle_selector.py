@@ -1,10 +1,10 @@
 import pygame
 import pymunk
-import random
 from typing import List
 from model.drawable.particle import DrawableParticle
 from model.drawable.segment import DrawableSegment
 from utils import values
+from visual.renderer import Renderer
 from visual.sidebar import Sidebar
 
 
@@ -12,9 +12,6 @@ def main():
     # Configura o pygame
     pygame.init()
     screen = pygame.display.set_mode((values.WIDTH, values.HEIGHT))
-    pygame.display.set_caption("Simulador de Fluidos 2D com pymunk")
-    clock = pygame.time.Clock()
-    font = pygame.font.Font(None, 30)
 
     # Configura a barra lateral
     sidebar = Sidebar((values.WIDTH, values.HEIGHT))
@@ -22,6 +19,9 @@ def main():
     # Configura o espaço físico pymunk
     space = pymunk.Space()
     space.gravity = (0, -values.GRAVITY)
+
+    #Configura o renderizador
+    renderer = Renderer(screen, space, sidebar)
 
     # Adiciona o chão como uma linha estática
     ground = DrawableSegment((0, 0), (values.WIDTH, 0), 5)
@@ -31,41 +31,21 @@ def main():
     # Adiciona paredes laterais como linhas estáticas
     left_wall = DrawableSegment((0, 0), (0, values.HEIGHT), 5)
     right_wall = DrawableSegment((values.WIDTH, 0), (values.WIDTH, values.HEIGHT), 5)
-    left_wall.add_to_space(space)
     left_wall.set_friction(0.5)
+    left_wall.add_to_space(space)
     right_wall.set_friction(0.5)
     right_wall.add_to_space(space)
 
-    # Cria uma rampa estática (segmento inclinado)
-    ramp = DrawableSegment((50, 100), (300, 200), 5)
-    ramp.set_friction(1.0)
-    ramp.add_to_space(space)
-
-    def add_particle(x, y, mass, inertia):
-        x = random.uniform(x - 0.1, x + 0.1)
-        y = random.uniform(y - 0.1, y + 0.1)
-        color = sidebar.selected_color
-        
-        if sidebar.selected_particle_type == 1:
-            particle = DrawableParticle(x, y, 5, mass, color=(255, 0, 0))
-        elif sidebar.selected_particle_type == 2:
-            particle = DrawableParticle(x, y, 5, mass * 2, color=(0, 255, 0))
-        elif sidebar.selected_particle_type == 3:
-            particle = DrawableParticle(x, y, 5, mass * 0.5, color=(0, 0, 255))
-        else:
-            particle = DrawableParticle(x, y, 5, mass, inertia, values.PARTICLE_COLOR)
-        
-        particle.set_elasticity(0.5)
-        particle.set_friction(0.5)
-        space.add(particle.body, particle.shape)
-        return particle
-
-    particles: List[DrawableParticle] = []
+    # Cria uma superficie quadrada
+    square_shape1 = DrawableSegment((30,20), (30,100),5)
+    square_shape1.add_to_space(space)
+    square_shape2 = DrawableSegment((30,20),(110,20),5)
+    square_shape2.add_to_space(space)
+    square_shape3 = DrawableSegment((110,20), (110,100),5)
+    square_shape3.add_to_space(space)
 
     running = True
     while running:
-        time_delta = clock.tick(60) / 1000.0
-
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 running = False
@@ -74,38 +54,31 @@ def main():
                     x, y = pygame.mouse.get_pos()
                     mass = float(sidebar.mass_input.get_text())
                     inertia = float(sidebar.inertia_input.get_text())
-                    particle = add_particle(x, y, mass, inertia)
-                    particles.append(particle)
-
-            sidebar.process_events(event)
+                    renderer.add_particle(x, y, mass, inertia)
+                    
+            sidebar.handle_events(event)
 
         keys = pygame.key.get_pressed()
         if keys[pygame.K_a]:
             x, y = pygame.mouse.get_pos()
             mass = float(sidebar.mass_input.get_text())
             inertia = float(sidebar.inertia_input.get_text())
-            particle = add_particle(x, y, mass, inertia)
-            particles.append(particle)
+            renderer.add_particle(x, y, mass, inertia)
 
         screen.fill(values.BACKGROUND_COLOR)
-        space.step(1 / 60.0)
-
-        for particle in particles:
-            particle.draw(screen)
 
         ground.draw(screen)
         left_wall.draw(screen)
         right_wall.draw(screen)
-        ramp.draw(screen)
+        square_shape1.draw(screen)
+        square_shape2.draw(screen)
+        square_shape3.draw(screen)
 
-        fps = clock.get_fps()
-        fps_text = font.render(f" FPS: {int(fps)}", True, values.TEXT_COLOR)
-        particle_count = font.render(f" Particle Count: {len(particles)}", True, values.TEXT_COLOR)
-        screen.blit(particle_count, (10, 30))
-        screen.blit(fps_text, (10, 10))
-
-        sidebar.update(time_delta)
-        sidebar.draw_ui(screen)
+        sidebar.update(renderer.time_delta)
+        sidebar.draw(screen)
+        renderer.draw_particles()
+        renderer.show_statistics()
+        renderer.update()   
 
         pygame.display.flip()
 

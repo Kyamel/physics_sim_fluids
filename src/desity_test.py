@@ -75,7 +75,7 @@ def main():
                     particle = add_particle(x, y, mass, inertia)
                     particles.append(particle)
 
-            sidebar.process_events(event)
+            sidebar.handle_events(event)
 
         keys = pygame.key.get_pressed()
         if keys[pygame.K_a]:
@@ -109,7 +109,7 @@ def main():
         screen.blit(fps_text, (10, 10))
 
         sidebar.update(time_delta)
-        sidebar.draw_ui(screen)
+        sidebar.draw(screen)
 
         pygame.display.flip()
 
