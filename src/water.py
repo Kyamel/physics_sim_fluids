@@ -35,7 +35,6 @@ pygame.display.set_caption('Water')
 
 clock = pygame.time.Clock()
 
-
 font = pygame.font.SysFont('consolas', 25)
 
 if USE_PYMUNK:
@@ -50,6 +49,51 @@ if TEXTURE:
 def map_to_range(value, from_x, from_y, to_x, to_y):
     return value * (to_y - to_x) / (from_y - from_x)
 
+def create_pong(_space, x=None, y=None):
+    if x is None:
+        x = screen_width // 2 + random()
+    if y is None:
+        y = 0
+    mass = randint(2, 5)
+    body = pymunk.Body(mass=mass, moment=mass * 1, body_type=pymunk.Body.DYNAMIC)
+    body.position = (x + random(), y)
+    body.splashed = False
+    shape = pymunk.Circle(body, body.mass * 2)
+    if TEXTURE:
+        shape.img = BALL_IMAGE
+        shape.img = pygame.transform.scale(shape.img, (shape.radius * 2, shape.radius * 2))
+    shape.friction = 0.05
+    shape.elasticity = 0.9  # Isso faz com que a pong seja mais "elástica" e tenha melhor flutuabilidade
+    _space.add(body, shape)
+    return shape
+
+
+def add_pong(pong, wave):
+    # Verifica se a pong está abaixo da superfície da água
+    if not pong.body.splashed:
+        if pong.body.position.y + pong.radius > wave.get_target_height():
+            pong.body.splashed = True
+            wave.splash(index=wave.get_spring_index_for_x_pos(pong.body.position.x), vel=pong.radius)
+            if VOLUME_RISE:
+                wave.add_volume(pong.radius ** 2 * math.pi)
+    # Aplica uma força para manter a pong na superfície da água
+    if pong.body.position.y + pong.radius > wave.get_target_height():
+        pong.body.apply_impulse_at_local_point((0, -pong.body.mass * 10))
+
+    # Desenha a pong na tela
+    draw_pong(pong, screen)
+
+
+def draw_pong(pong, surf: pygame.Surface):
+    if TEXTURE:
+        try:
+            angle = round(math.degrees(pong.body.angle))
+        except ValueError:
+            angle = 0
+        img = pygame.transform.rotate(pong.img, -angle)
+        surf.blit(img, img.get_rect(center=pong.body.position))
+    else:
+        pygame.draw.circle(surf, 'blue', pong.body.position, pong.radius)
 
 def create_rock(_space, x=None, y=None):
     if x is None:
@@ -273,6 +317,10 @@ def main_game():
                     mx, my = pygame.mouse.get_pos()
                     rock = create_rock(space, mx, my)
                     objects.append(rock)
+                if e.button == 2:  # Supondo que o botão do meio do mouse seja usado para criar uma pong
+                    mx, my = pygame.mouse.get_pos()
+                    pong = create_pong(space, mx, my)
+                    objects.append(pong)
                 if e.button == 3:
                     mx, my = pygame.mouse.get_pos()
                     floating_objects.append(Ball(mx, my))
