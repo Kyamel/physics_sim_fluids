@@ -1,7 +1,6 @@
 import random
 import time
-from typing import Tuple
-import numpy as np
+from typing import List, Tuple
 import pygame
 import pymunk
 import pygame_gui
@@ -18,7 +17,6 @@ clock = pygame.time.Clock()
 space = pymunk.Space()
 space.gravity = (0, -980)  # Gravidade padrão em pixels por segundo ao quadrado
 
-
 # Inicializa o pygame_gui
 manager = pygame_gui.UIManager((width, height))
 
@@ -26,27 +24,34 @@ manager = pygame_gui.UIManager((width, height))
 fluid_height = height // 2  # Fluido ocupa metade da tela (ajuste conforme necessário)
 fluid_density = 1.0
 
-# GUI: Criar sliders para modificar propriedades do fluido
+# GUI: Criar sliders para modificar propriedades do fluido e da bola
 fluid_height_slider = pygame_gui.elements.UIHorizontalSlider(
-    relative_rect=pygame.Rect((50, 50), (200, 25)), 
-    start_value=fluid_height, 
+    relative_rect=pygame.Rect((50, 50), (200, 25)),
+    start_value=fluid_height,
     value_range=(0, height),
     manager=manager
 )
 
 fluid_density_slider = pygame_gui.elements.UIHorizontalSlider(
     relative_rect=pygame.Rect((50, 100), (200, 25)), 
-    start_value=fluid_density, 
-    value_range=(0.1, 10.0),
+    start_value=fluid_density,
+    value_range=(0.0, 10.0),
+    manager=manager
+)
+
+ball_density_slider = pygame_gui.elements.UIHorizontalSlider(
+    relative_rect=pygame.Rect((50, 150), (200, 25)),
+    start_value=5.0,  # Valor inicial
+    value_range=(0.0, 10.0),  # Ajuste o intervalo conforme necessário
     manager=manager
 )
 
 class Ball():
-    def __init__(self, radius: float,density: float, position: Tuple[int, int], color=(255, 255, 255)):
-        self.density = density
-        self.volume = 4 / 3 * np.pi * radius**3
-        self.mass = self.density * self.volume
+    def __init__(self, radius: float, density: float, position: Tuple[int, int], color=(255, 255, 255)):
+        self.volume = 1  # volume constante para que a massa seja = densidade
+        self.mass = density
         self.color = color
+        self.radius = 10
 
         # Corpo físico e forma da bola
         self.body = pymunk.Body(self.mass, pymunk.moment_for_circle(self.mass, 0, radius))
@@ -58,6 +63,7 @@ class Ball():
         self.body.angular_velocity = 0  # Zera a rotação
         self.body.moment = float("inf")  # Define o momento de inércia como infinito, impedindo rotação
 
+
         space.add(self.body, self.shape)
 
     def draw(self, screen: pygame.Surface):
@@ -66,7 +72,7 @@ class Ball():
         pos_y = int(height - self.body.position.y)  # Inverte o eixo Y para o pygame
         pygame.draw.circle(screen, self.color, (pos_x, pos_y), int(self.shape.radius))
 
-    def apply_buoyancy(self, fluid_height: int, fluid_density: float = 1.0, gravity: float = 9.8):
+    def apply_buoyancy(self, fluid_height: int, fluid_density: float = 1.0, gravity: float = -980):
         # Calcula a profundidade submersa
         submersion_depth = max(0, fluid_height - self.body.position.y)
         if submersion_depth > 0:
@@ -77,12 +83,10 @@ class Ball():
             submerged_volume = submersion_fraction * self.volume
 
             # Calcula a força de flutuação
-            buoyancy_force = fluid_density * submerged_volume * gravity
+            buoyancy_force = fluid_density * 1 * gravity
 
-            print(f"Buoyancy force: {buoyancy_force}")
-
-            # Aplica a força de flutuação somente no eixo Y (positivo, para cima)
-            self.body.apply_force_at_local_point((0, buoyancy_force))
+            # Aplica a força de flutuação somente no eixo Y (positivo, para cima) ao contrário da gravidade
+            self.body.apply_force_at_local_point((0, -buoyancy_force))
 
     def apply_arrastro(self, fluid_height: int, drag_coefficient: float = 1.0):
         # Calcula a profundidade submersa
@@ -104,12 +108,48 @@ class Ball():
             # ou uma outra lógica específica para este caso
             pass
 
+    def is_mouse_over(self, mouse_pos: Tuple[int, int]) -> bool:
+        ball_pos = (int(self.body.position.x), int(height - self.body.position.y))
+        distance = ((mouse_pos[0] - ball_pos[0]) ** 2 + (mouse_pos[1] - ball_pos[1]) ** 2) ** 0.5
+        return distance <= self.radius
+
 # Função para desenhar o nível do fluido
 def draw_fluid_line(screen, fluid_height):
     pygame.draw.line(screen, (0, 0, 255), (0, height - fluid_height), (width, height - fluid_height), 2)
 
+# Função para criar as paredes ao redor da tela
+def create_walls():
+    wall_thickness = 10  # Espessura das paredes
+
+    walls = [
+        # Parede superior
+        pymunk.Segment(space.static_body, (0, height - wall_thickness), (width, height - wall_thickness), wall_thickness),
+        # Parede inferior
+        pymunk.Segment(space.static_body, (0, wall_thickness), (width, wall_thickness), wall_thickness),
+        # Parede esquerda
+        pymunk.Segment(space.static_body, (wall_thickness, 0), (wall_thickness, height), wall_thickness),
+        # Parede direita
+        pymunk.Segment(space.static_body, (width - wall_thickness, 0), (width - wall_thickness, height), wall_thickness)
+    ]
+
+    for wall in walls:
+        wall.friction = 1.0
+        wall.elasticity = 0.8
+        space.add(wall)
+
+create_walls()
+
 # Lista de bolas
-balls = []
+balls: List[Ball] = []
+
+# Variável para armazenar a densidade da bola atual
+current_ball_density = 5.0
+
+tooltip = pygame_gui.elements.UILabel(
+        relative_rect=pygame.Rect((0, 0), (100, 30)),
+        text='',
+        manager=manager
+    )
 
 # Loop principal
 running = True
@@ -128,35 +168,44 @@ while running:
             x_random = x + random.randint(-offset_range, offset_range)
             y_random = y + random.randint(-offset_range, offset_range)
 
+            ball_radius = 10  # Raio fixo ou aleatório, se preferir
 
-            ball_radius = 10 # Raio aleatório entre 10 e 30
-            ball_density = 0.02  # Massa aleatória entre 1 e 10
-            ball_color = (255, 255, 255)  # Cor branca
-            new_ball = Ball(ball_radius, ball_density, (x_random, height - y_random), ball_color)
+            # Obtém a densidade da bola do slider
+            current_ball_density = ball_density_slider.get_current_value()
+
+            print("Ball density", current_ball_density)
+
+            new_ball = Ball(ball_radius, current_ball_density, (x_random, height - y_random))
             balls.append(new_ball)
-
 
         manager.process_events(event)
 
     # Atualiza o valor da altura e densidade do fluido com os sliders
     fluid_height = fluid_height_slider.get_current_value()
     fluid_density = fluid_density_slider.get_current_value()
+    print(f"Fluid density {fluid_density}, Ball density {current_ball_density}")
 
 
 
     # Aplica a flutuação em cada bola e desenha as bolas
+    mouse_pos = pygame.mouse.get_pos()
+    tooltip_text = ''
     for ball in balls:
-        ball.apply_buoyancy(fluid_height,fluid_density)
+        ball.apply_buoyancy(fluid_height, fluid_density)
         ball.apply_arrastro(fluid_height)
         ball.draw(window)
+        if ball.is_mouse_over(mouse_pos):
+            tooltip_text = f'Density: {ball.mass:.2f}'
+            break
+
+    tooltip.set_text(tooltip_text)
 
     # Desenha o nível do fluido
     draw_fluid_line(window, fluid_height)
 
-   # Atualiza o GUI
+    # Atualiza o GUI
     manager.update(time_delta)
 
-    
     # Atualiza o espaço de física
     space.step(1 / 60.0)
 
@@ -168,4 +217,3 @@ while running:
     clock.tick(60)
 
 pygame.quit()
-
