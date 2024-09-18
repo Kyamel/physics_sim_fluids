@@ -166,8 +166,12 @@ def create_walls():
         SPACE.add(wall)
 
 # Função para desenhar o nível do fluido
-def draw_fluid_line(screen, fluid_height):
-    pygame.draw.line(screen, (0, 0, 255), (0, HEIGHT - fluid_height), (WIDTH, HEIGHT - fluid_height), 2)
+def draw_fluid_area(screen, fluid_height):
+    water_color = (0, 0, 255, 100)  # Azul com transparência
+    water_surface = pygame.Surface((WIDTH, fluid_height), pygame.SRCALPHA)  # Superfície transparente com altura = fluid_height
+    pygame.draw.rect(water_surface, water_color, pygame.Rect(0, 0, WIDTH, fluid_height))
+    screen.blit(water_surface, (0, HEIGHT - fluid_height))  # Desenha a água de baixo para cima
+
 
 # Inicializa a simulação
 create_walls()
@@ -200,7 +204,7 @@ while running:
     simulation.update_balls(gui.get_fluid_height(), fluid_density)
 
     # Desenha os elementos
-    draw_fluid_line(WINDOW, gui.get_fluid_height())
+    draw_fluid_area(WINDOW, gui.get_fluid_height())
     simulation.draw_balls(WINDOW, pygame.mouse.get_pos(), gui)
 
     # Atualiza e desenha a interface
