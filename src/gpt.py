@@ -9,16 +9,16 @@ import pygame_gui
 pygame.init()
 
 # Parâmetros da janela
-width, height = 800, 600
-window = pygame.display.set_mode((width, height))
-clock = pygame.time.Clock()
+WIDTH, HEIGHT = 800, 600
+WINDOW = pygame.display.set_mode((WIDTH, HEIGHT))
+CLOCK = pygame.time.Clock()
 
 # Criação do espaço de física do pymunk
-space = pymunk.Space()
-space.gravity = (0, -980)  # Gravidade padrão
+SPACE = pymunk.Space()
+SPACE.gravity = (0, -980)  # Gravidade padrão
 
 # Inicializa o pygame_gui
-manager = pygame_gui.UIManager((width, height))
+manager = pygame_gui.UIManager((WIDTH, HEIGHT))
 
 # Função para arredondar valores ao passo desejado
 def round_to_step(value, step):
@@ -27,21 +27,14 @@ def round_to_step(value, step):
 # Classe para gerenciar a interface do usuário
 class GUI:
     def __init__(self):
-        # Criação dos sliders de interface
-        self.fluid_height_slider = pygame_gui.elements.UIHorizontalSlider(
-            relative_rect=pygame.Rect((50, 50), (200, 25)),
-            start_value=height // 2,
-            value_range=(0, height),
-            manager=manager
-        )
-        
+
         self.fluid_density_slider = pygame_gui.elements.UIHorizontalSlider(
             relative_rect=pygame.Rect((50, 100), (200, 25)),
             start_value=1.0,
             value_range=(0.0, 10.0),
             manager=manager
         )
-        
+
         self.ball_density_slider = pygame_gui.elements.UIHorizontalSlider(
             relative_rect=pygame.Rect((50, 150), (200, 25)),
             start_value=5.0,
@@ -55,6 +48,8 @@ class GUI:
             manager=manager
         )
 
+        self.fluid_height = int(HEIGHT // 2)
+
     def process_events(self, event):
         # Processa eventos da interface
         manager.process_events(event)
@@ -65,8 +60,11 @@ class GUI:
     def draw(self, screen):
         manager.draw_ui(screen)
 
+    def increment_fluid_height(self, increment: int):
+        self.fluid_height += increment
+
     def get_fluid_height(self):
-        return round_to_step(self.fluid_height_slider.get_current_value(), 1)
+        return self.fluid_height
 
     def get_fluid_density(self):
         return round_to_step(self.fluid_density_slider.get_current_value(), 1)
@@ -90,11 +88,11 @@ class Ball:
         self.shape.friction = 0.5
         self.body.angular_velocity = 0
         self.body.moment = float("inf")  # Impede a rotação
-        space.add(self.body, self.shape)
+        SPACE.add(self.body, self.shape)
 
     def draw(self, screen: pygame.Surface):
         pos_x = int(self.body.position.x)
-        pos_y = int(height - self.body.position.y)
+        pos_y = int(HEIGHT - self.body.position.y)
         pygame.draw.circle(screen, self.color, (pos_x, pos_y), int(self.shape.radius))
 
     def empuxo(self, fluid_height: int, fluid_density: float = 1.0, gravity: float = -980):
@@ -111,7 +109,7 @@ class Ball:
             self.body.apply_force_at_local_point((drag_force_x * 20, drag_force_y * 100))
 
     def is_mouse_over(self, mouse_pos: Tuple[int, int]) -> bool:
-        ball_pos = (int(self.body.position.x), int(height - self.body.position.y))
+        ball_pos = (int(self.body.position.x), int(HEIGHT - self.body.position.y))
         distance = ((mouse_pos[0] - ball_pos[0]) ** 2 + (mouse_pos[1] - ball_pos[1]) ** 2) ** 0.5
         return distance <= self.radius
 
@@ -124,7 +122,7 @@ class Simulation:
         offset_range = 2
         x_random = x + random.randint(-offset_range, offset_range)
         y_random = y + random.randint(-offset_range, offset_range)
-        new_ball = Ball(10, density, (x_random, height - y_random))
+        new_ball = Ball(10, density, (x_random, HEIGHT - y_random), (255*(density/10), 255*(density/10), 255))
         self.balls.append(new_ball)
 
     def update_balls(self, fluid_height, fluid_density):
@@ -144,19 +142,19 @@ class Simulation:
 def create_walls():
     wall_thickness = 10
     walls = [
-        pymunk.Segment(space.static_body, (0, height - wall_thickness), (width, height - wall_thickness), wall_thickness),
-        pymunk.Segment(space.static_body, (0, wall_thickness), (width, wall_thickness), wall_thickness),
-        pymunk.Segment(space.static_body, (wall_thickness, 0), (wall_thickness, height), wall_thickness),
-        pymunk.Segment(space.static_body, (width - wall_thickness, 0), (width - wall_thickness, height), wall_thickness)
+        pymunk.Segment(SPACE.static_body, (0, HEIGHT - wall_thickness), (WIDTH, HEIGHT - wall_thickness), wall_thickness),
+        pymunk.Segment(SPACE.static_body, (0, wall_thickness), (WIDTH, wall_thickness), wall_thickness),
+        pymunk.Segment(SPACE.static_body, (wall_thickness, 0), (wall_thickness, HEIGHT), wall_thickness),
+        pymunk.Segment(SPACE.static_body, (WIDTH - wall_thickness, 0), (WIDTH - wall_thickness, HEIGHT), wall_thickness)
     ]
     for wall in walls:
         wall.friction = 1.0
         wall.elasticity = 0.8
-        space.add(wall)
+        SPACE.add(wall)
 
 # Função para desenhar o nível do fluido
 def draw_fluid_line(screen, fluid_height):
-    pygame.draw.line(screen, (0, 0, 255), (0, height - fluid_height), (width, height - fluid_height), 2)
+    pygame.draw.line(screen, (0, 0, 255), (0, HEIGHT - fluid_height), (WIDTH, HEIGHT - fluid_height), 2)
 
 # Inicializa a simulação
 create_walls()
@@ -166,8 +164,8 @@ simulation = Simulation()
 # Loop principal
 running = True
 while running:
-    time_delta = clock.tick(60) / 1000.0
-    window.fill((0, 0, 0))
+    time_delta = CLOCK.tick(60) / 1000.0
+    WINDOW.fill((0, 0, 0))
 
     # Verifica eventos
     for event in pygame.event.get():
@@ -177,26 +175,27 @@ while running:
             x, y = pygame.mouse.get_pos()
             ball_density = gui.get_ball_density()
             simulation.create_ball(x, y, ball_density)
+            gui.increment_fluid_height(1) # volume da bola = 1
 
         gui.process_events(event)
 
     # Atualiza os valores da interface
-    fluid_height = gui.get_fluid_height()
+    #fluid_height = gui.get_fluid_height()
     fluid_density = gui.get_fluid_density()
 
     # Atualiza a simulação
-    simulation.update_balls(fluid_height, fluid_density)
+    simulation.update_balls(gui.get_fluid_height(), fluid_density)
 
     # Desenha os elementos
-    draw_fluid_line(window, fluid_height)
-    simulation.draw_balls(window, pygame.mouse.get_pos(), gui)
+    draw_fluid_line(WINDOW, gui.get_fluid_height())
+    simulation.draw_balls(WINDOW, pygame.mouse.get_pos(), gui)
 
     # Atualiza e desenha a interface
     gui.update(time_delta)
-    gui.draw(window)
+    gui.draw(WINDOW)
 
     # Atualiza o espaço de física
-    space.step(1 / 60.0)
+    SPACE.step(1 / 60.0)
 
     pygame.display.flip()
 
