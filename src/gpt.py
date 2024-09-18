@@ -90,8 +90,8 @@ class GUI:
 
 # Classe para gerenciar o comportamento das bolas
 class Ball:
-    def __init__(self, radius: float, density: float, position: Tuple[int, int], color=(255, 255, 255)):
-        self.mass = density
+    def __init__(self, radius: float, mass: float, position: Tuple[int, int], color=(255, 255, 255)):
+        self.mass = mass
         self.radius = radius
         self.color = color
         self.body = pymunk.Body(self.mass, pymunk.moment_for_circle(self.mass, 0, radius))
@@ -142,6 +142,8 @@ class Simulation:
         offset_range = 2
         x_random = x + random.randint(-offset_range, offset_range)
         y_random = y + random.randint(-offset_range, offset_range)
+
+        
         new_ball = Ball(10, density, (x_random, HEIGHT - y_random), (255*(density/10), 255*(density/10), 255))
         self.balls.append(new_ball)
 
@@ -162,7 +164,7 @@ class Simulation:
 
 # Função para criar paredes no pymunk
 def create_walls():
-    wall_thickness = 10
+    wall_thickness = 1
     walls = [
         pymunk.Segment(SPACE.static_body, (0, HEIGHT - wall_thickness), (WIDTH, HEIGHT - wall_thickness), wall_thickness),
         pymunk.Segment(SPACE.static_body, (0, wall_thickness), (WIDTH, wall_thickness), wall_thickness),
@@ -201,7 +203,7 @@ while running:
             x, y = pygame.mouse.get_pos()
             ball_density = gui.get_ball_density()
             simulation.create_ball(x, y, ball_density)
-            
+
 
         gui.process_events(event)
 
