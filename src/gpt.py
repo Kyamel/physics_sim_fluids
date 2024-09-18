@@ -29,16 +29,27 @@ class GUI:
     def __init__(self):
 
         self.fluid_density_slider = pygame_gui.elements.UIHorizontalSlider(
-            relative_rect=pygame.Rect((50, 100), (200, 25)),
+            relative_rect=pygame.Rect((50, 40), (200, 25)),
             start_value=1.0,
-            value_range=(0.0, 10.0),
+            value_range=(1.0, 10.0),
             manager=manager
         )
 
+        self.fluid_density_label = pygame_gui.elements.UILabel(
+            relative_rect=pygame.Rect((50, 20), (200, 25)),
+            text=f"Fluid Density: {self.fluid_density_slider.get_current_value():.1f}",
+            manager=manager
+        )
         self.ball_density_slider = pygame_gui.elements.UIHorizontalSlider(
-            relative_rect=pygame.Rect((50, 150), (200, 25)),
+            relative_rect=pygame.Rect((50, 90), (200, 25)),
             start_value=5.0,
-            value_range=(0.0, 10.0),
+            value_range=(1.0, 10.0),
+            manager=manager
+        )
+
+        self.ball_density_label = pygame_gui.elements.UILabel(
+            relative_rect=pygame.Rect((50, 70), (200, 25)),
+            text=f"New Ball Density: {self.ball_density_slider.get_current_value():.1f}",
             manager=manager
         )
 
@@ -55,6 +66,8 @@ class GUI:
         manager.process_events(event)
 
     def update(self, time_delta):
+        self.fluid_density_label.set_text(f"Fluid Density: {self.get_fluid_density():}")
+        self.ball_density_label.set_text(f"New Ball Density: {self.get_ball_density():}")
         manager.update(time_delta)
 
     def draw(self, screen):
