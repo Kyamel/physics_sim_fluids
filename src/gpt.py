@@ -102,6 +102,13 @@ class Ball:
         self.body.angular_velocity = 0
         self.body.moment = float("inf")  # Impede a rotação
         SPACE.add(self.body, self.shape)
+        self.has_incremented = False
+
+    def check_increment_water(self, fluid_height):
+        if not self.has_incremented and self.body.position.y <= fluid_height:
+            self.has_incremented = True
+            return True
+        return False
 
     def draw(self, screen: pygame.Surface):
         pos_x = int(self.body.position.x)
@@ -138,10 +145,12 @@ class Simulation:
         new_ball = Ball(10, density, (x_random, HEIGHT - y_random), (255*(density/10), 255*(density/10), 255))
         self.balls.append(new_ball)
 
-    def update_balls(self, fluid_height, fluid_density):
+    def update_balls(self, fluid_height, fluid_density, gui):
         for ball in self.balls:
             ball.empuxo(fluid_height, fluid_density)
             ball.arrastro(fluid_height)
+            if ball.check_increment_water(gui.get_fluid_height()):
+                gui.increment_fluid_height(1)
 
     def draw_balls(self, screen, mouse_pos, gui):
         tooltip_text = ''
@@ -192,7 +201,7 @@ while running:
             x, y = pygame.mouse.get_pos()
             ball_density = gui.get_ball_density()
             simulation.create_ball(x, y, ball_density)
-            gui.increment_fluid_height(1) # volume da bola = 1
+            
 
         gui.process_events(event)
 
@@ -201,7 +210,7 @@ while running:
     fluid_density = gui.get_fluid_density()
 
     # Atualiza a simulação
-    simulation.update_balls(gui.get_fluid_height(), fluid_density)
+    simulation.update_balls(gui.get_fluid_height(), fluid_density, gui)
 
     # Desenha os elementos
     draw_fluid_area(WINDOW, gui.get_fluid_height())
